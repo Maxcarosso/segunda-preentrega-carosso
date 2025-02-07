@@ -2,10 +2,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar/Navbar';
 import AllProducts from './pages/AllProducts';
-import BrandProducts from './pages/BrandProducts';
-import { useCart } from './context/CartContext';
+import CategoryProducts from './pages/CategoryProducts';
 import Cart from './pages/Cart';
 import { Routes, Route } from 'react-router-dom';
+import ItemDetailContainer from './components/ItemDetailContainer/ItemDetailContainer';
+import { Link } from 'react-router-dom';
+import './styles/styles.css';
+import CartView from './components/CartView/CartView';
 
 function App() {
   return (
@@ -15,10 +18,9 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<AllProducts />} />
-            <Route path="/nike" element={<BrandProducts brand="nike" />} />
-            <Route path="/adidas" element={<BrandProducts brand="adidas" />} />
-            <Route path="/vans" element={<BrandProducts brand="vans" />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/category/:categoryId" element={<CategoryProducts />} />
+            <Route path="/item/:itemId" element={<ItemDetailContainer />} />
+            <Route path="/cart" element={<CartView />} />
           </Routes>
         </div>
       </BrowserRouter>

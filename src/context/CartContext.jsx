@@ -1,55 +1,92 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const CartContext = createContext();
+// Creamos el contexto
+const CartContext = createContext({
+  cart: [],
+  addItem: () => {},
+  removeItem: () => {},
+  clearCart: () => {},
+  isInCart: () => {},
+  getTotalQuantity: () => {},
+  getTotalPrice: () => {},
+});
 
+// Hook personalizado para usar el contexto
 export const useCart = () => {
-const context = useContext(CartContext);
-if (!context) {
-    throw new Error('useCart debe ser usado dentro de un CartProvider');
-}
-return context;
+  return useContext(CartContext);
 };
 
+// Proveedor del contexto
 export const CartProvider = ({ children }) => {
-const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-const addToCart = (product) => {
-    setCart(prevCart => {
-    const existingProduct = prevCart.find(item => item.id === product.id);
-    if (existingProduct) {
-        return prevCart.map(item =>
-        item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  // Agregar item al carrito
+  const addItem = (item, quantity) => {
+    if (!isInCart(item.id)) {
+      setCart(prev => [...prev, { ...item, quantity }]);
+    } else {
+      // Si el item ya existe, actualiza la cantidad
+      setCart(prev => prev.map(cartItem => {
+        if (cartItem.id === item.id) {
+          return { ...cartItem, quantity: cartItem.quantity + quantity };
+        }
+        return cartItem;
+      }));
     }
-    return [...prevCart, { ...product, quantity: 1 }];
-    });
-};
+  };
 
-const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
-};
+  // Remover item del carrito
+  const removeItem = (itemId) => {
+    setCart(prev => prev.filter(item => item.id !== itemId));
+  };
 
-const clearCart = () => {
+  // Limpiar todo el carrito
+  const clearCart = () => {
     setCart([]);
-};
+  };
 
-const getCartTotal = () => {
+  // Verificar si un item está en el carrito
+  const isInCart = (itemId) => {
+    return cart.some(item => item.id === itemId);
+  };
+
+  // Obtener cantidad total de items en el carrito
+  const getTotalQuantity = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  // Obtener precio total del carrito
+  const getTotalPrice = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-};
+  };
 
-const value = {
+  // Obtener cantidad de un item específico
+  const getItemQuantity = (itemId) => {
+    const item = cart.find(item => item.id === itemId);
+    return item?.quantity || 0;
+  };
+
+  const contextValue = {
     cart,
-    addToCart,
-    removeFromCart,
+    addItem,
+    removeItem,
     clearCart,
-    getCartTotal
-};
+    isInCart,
+    getTotalQuantity,
+    getTotalPrice,
+    getItemQuantity
+  };
 
-return (
-    <CartContext.Provider value={value}>
-    {children}
+  return (
+    <CartContext.Provider value={contextValue}>
+      {children}
     </CartContext.Provider>
-);
+  );
 }; 
