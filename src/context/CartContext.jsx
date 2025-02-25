@@ -13,7 +13,11 @@ const CartContext = createContext({
 
 // Hook personalizado para usar el contexto
 export const useCart = () => {
-  return useContext(CartContext);
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart debe usarse dentro de un CartProvider');
+  }
+  return context;
 };
 
 // Proveedor del contexto
@@ -28,7 +32,7 @@ export const CartProvider = ({ children }) => {
   }, [cart]);
 
   // Agregar item al carrito
-  const addItem = (item, quantity) => {
+  const addToCart = (item, quantity = 1) => {
     if (!isInCart(item.id)) {
       setCart(prev => [...prev, { ...item, quantity }]);
     } else {
@@ -75,7 +79,7 @@ export const CartProvider = ({ children }) => {
 
   const contextValue = {
     cart,
-    addItem,
+    addToCart,
     removeItem,
     clearCart,
     isInCart,

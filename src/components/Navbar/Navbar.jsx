@@ -1,45 +1,39 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './NavBar.css';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 
 const Navbar = () => {
-const { getTotalQuantity } = useCart();
-const location = useLocation();
-const totalItems = getTotalQuantity();
-
-const categories = [
-    { id: 'all', name: 'Todos los Productos', path: '/' },
-    { id: 'nike', name: 'Nike', path: '/category/nike' },
-    { id: 'adidas', name: 'Adidas', path: '/category/adidas' },
-    { id: 'vans', name: 'Vans', path: '/category/vans' },
-];
+  const { cart } = useCart();
+  const location = useLocation();
 
   return (
     <nav className="navbar">
-    <div className="navbar-title">
+      <div className="navbar-title">
         <h1>Zapatillas Importadas</h1>
-    </div>
-    
-    <div className="nav-links">
-        {categories.map(category => (
-        <Link
-            key={category.id}
-            to={category.path}
-            className={location.pathname === category.path ? 'active' : ''}
-        >
-            {category.name}
+      </div>
+      
+      <div className="nav-links">
+        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
+          Inicio
         </Link>
-        ))}
-    </div>
+        <Link to="/category/nike" className={location.pathname === '/category/nike' ? 'active' : ''}>
+          Nike
+        </Link>
+        <Link to="/category/adidas" className={location.pathname === '/category/adidas' ? 'active' : ''}>
+          Adidas
+        </Link>
+        <Link to="/category/vans" className={location.pathname === '/category/vans' ? 'active' : ''}>
+          Vans
+        </Link>
+      </div>
 
-    <div className="cart-icon">
+      <div className="cart-icon">
         <Link to="/cart">
-        <FaShoppingCart />
-        {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
+          <FaShoppingCart />
+          {cart.length > 0 && <span className="cart-count">{cart.length}</span>}
         </Link>
-    </div>
+      </div>
     </nav>
   );
 };

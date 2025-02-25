@@ -1,7 +1,10 @@
 export const ROUTES = {
   HOME: '/',
   CATEGORY: '/category/:categoryId',
-  ITEM: '/item/:itemId',
+  PRODUCT: '/item/:itemId',
   CART: '/cart',
-  CHECKOUT: '/checkout'
+  FAVORITES: '/favorites',
+  SEARCH: '/search',
+  CONTACT: '/contact',
+  ABOUT: '/about'
 }; 
